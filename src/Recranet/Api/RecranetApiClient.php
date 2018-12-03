@@ -42,8 +42,68 @@ class RecranetApiClient
      */
     public function getAccommodations($params)
     {
+        return $this->performHttpRequest('accommodations', $params);
+    }
+
+    /**
+     * Get accommodation price components
+     *
+     * @param array $params
+     *
+     * @return array\null
+     */
+    public function getAccommodationPriceComponents($params)
+    {
+        return $this->performHttpRequest('accommodation_price_components', $params);
+    }
+
+    /**
+     * Get discount specifications
+     *
+     * @param array $params
+     *
+     * @return array\null
+     */
+    public function getDiscountSpecifications($params)
+    {
+        return $this->performHttpRequest('discount_specifications', $params);
+    }
+
+    /**
+     * Get package specifications
+     *
+     * @param array $params
+     *
+     * @return array\null
+     */
+    public function getPackageSpecifications($params)
+    {
+        return $this->performHttpRequest('package_specifications', $params);
+    }
+
+    /**
+     * Get supplements
+     *
+     * @param array $params
+     *
+     * @return array\null
+     */
+    public function getSupplements($params)
+    {
+        return $this->performHttpRequest('supplements', $params);
+    }
+
+    /**
+     * Perform http request
+     *
+     * @param array $params
+     *
+     * @return array\null
+     */
+    public function performHttpRequest($method, $params)
+    {
         $params = array_merge($params, array('organization' => getenv('API_ORGANIZATION')));
-        $this->client->get(self::API_ENDPOINT . '/accommodations/', $params);
+        $this->client->get(sprintf('%s/%s/', self::API_ENDPOINT, $method), $params);
 
         if ($this->client->error) {
             throw new ApiException($this->client->errorMessage, $this->client->errorCode);
