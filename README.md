@@ -19,3 +19,5 @@ RECRANET_API_ORGANIZATION=1000
 
 ## Console Application
 We provide a console application with this client. Run `php app.php` to list available commands, use the help function to get the required parameters.
+
+![Console demo](https://raw.githubusercontent.com/recranet/recranet-api-php/master/docs/example-console.png)
