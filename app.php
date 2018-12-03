@@ -5,6 +5,7 @@ require 'vendor/autoload.php';
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Logger\ConsoleLogger;
@@ -249,29 +250,7 @@ $app
             'accommodation' => array('id' => $accommodation),
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
-            'guest' => array()
         );
-
-        // Guest attributes
-        $attributes = array(
-            'firstName',
-            'surname',
-            'email',
-            'phoneNumber',
-            'address',
-            'addressNo',
-            'postalCode',
-            'locality',
-            'country',
-            'locale'
-        );
-
-        $helper = new QuestionHelper();
-
-        foreach ($attributes as $attribute) {
-            $question = new Question('Reservation ' . $attribute . ': ', '');
-            $data['guest'][$attribute] = $helper->ask($input, $output, $question);
-        }
 
         // Create client
         $client = new RecranetApiClient(new ConsoleLogger($output));
@@ -364,12 +343,50 @@ $app
 
 // Place reservation
 $app
-    ->command('reservation-place id token [source]', function(InputInterface $input, OutputInterface $output, $id, $token, $source = null) {
+    ->command('reservation-place id token', function(InputInterface $input, OutputInterface $output, $id, $token) {
         // Set reservation request data
         $data = array(
-            'source' => $source
+            'guest' => array()
         );
 
+        // Guest attributes
+        $attributes = array(
+            'firstName',
+            'surname',
+            'email',
+            'phoneNumber',
+            'address',
+            'addressNo',
+            'postalCode',
+            'locality',
+            'country',
+            'locale'
+        );
+
+        $helper = new QuestionHelper();
+
+        // Set guest data
+        foreach ($attributes as $attribute) {
+            $question = new Question('Reservation ' . $attribute . ': ', '');
+            $data['guest'][$attribute] = $helper->ask($input, $output, $question);
+        }
+
+        // Set source
+        $question = new ChoiceQuestion(
+            'Reservation source? ',
+            array('office', 'owner', 'reception', 'telephone', 'tour-operator', 'web', 'email', 'booking', 'holidaymedia'),
+            0
+        );
+        $data['source'] = $helper->ask($input, $output, $question);
+
+        // Confirm reservation
+        $question = new ConfirmationQuestion('Reservation confirmed? y/n ', false);
+
+        if ($helper->ask($input, $output, $question)) {
+            $data['confirmed'] = true;
+        }
+
+        // Create client
         $client = new RecranetApiClient(new ConsoleLogger($output));
 
         try {
@@ -383,7 +400,6 @@ $app
     ->descriptions('Place reservation', array(
         'id' => 'Reservation id',
         'token' => 'Reservation token',
-        'source' => 'Reservation source',
     ))
 ;
 
