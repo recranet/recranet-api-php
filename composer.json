@@ -2,7 +2,8 @@
     "require": {
         "php-curl-class/php-curl-class": "^8.3",
         "mnapoli/silly": "^1.7",
-        "vlucas/phpdotenv": "^2.5"
+        "vlucas/phpdotenv": "^2.5",
+        "psr/log": "^1.1"
     },
     "autoload": {
         "psr-4": {

@@ -3,6 +3,7 @@
 namespace Recranet\Api;
 
 use Curl\Curl;
+use Psr\Log\LoggerInterface;
 use Recranet\Api\Exceptions\ApiException;
 
 class RecranetApiClient
@@ -23,14 +24,21 @@ class RecranetApiClient
     protected $client;
 
     /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * Constructor.
      */
-    public function __construct()
+    public function __construct(LoggerInterface $logger = null)
     {
         $this->client = new Curl();
         $this->client->setBasicAuthentication(getenv('RECRANET_API_USERNAME'), getenv('RECRANET_API_PASSWORD'));
         $this->client->setDefaultDecoder('json');
         $this->client->setUserAgent('recranet-api-php/' . self::CLIENT_VERSION . ';PHP/' . phpversion());
+
+        $this->logger = $logger;
     }
 
     /**
@@ -178,11 +186,21 @@ class RecranetApiClient
      */
     public function performHttpRequest($url, $params)
     {
+        // Remove modified date from if emtpy
+        if (isset($params['modifiedDateFrom']) && empty($params['modifiedDateFrom'])) {
+            unset($params['modifiedDateFrom']);
+        }
+
+        // Merge params with organization id
         $params = array_merge($params, array('organization' => getenv('RECRANET_API_ORGANIZATION')));
         $this->client->get(sprintf('%s%s', self::API_ENDPOINT, $url), $params);
 
         if ($this->client->error) {
             throw new ApiException($this->client->errorMessage, $this->client->errorCode);
+        }
+
+        if ($this->logger) {
+            $this->logger->notice('HTTP GET request with URL: ' . $this->client->getUrl());
         }
 
         return $this->client->getResponse();
@@ -203,6 +221,10 @@ class RecranetApiClient
             throw new ApiException($this->client->errorMessage, $this->client->errorCode);
         }
 
+        if ($this->logger) {
+            $this->logger->notice('HTTP POST request with URL: ' . $this->client->getUrl());
+        }
+
         return $this->client->getResponse();
     }
 
@@ -219,6 +241,10 @@ class RecranetApiClient
 
         if ($this->client->error) {
             throw new ApiException($this->client->errorMessage, $this->client->errorCode);
+        }
+
+        if ($this->logger) {
+            $this->logger->notice('HTTP PUT request with URL: ' . $this->client->getUrl());
         }
 
         return $this->client->getResponse();

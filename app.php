@@ -7,6 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Dotenv\Dotenv;
 use Recranet\Api\RecranetApiClient;
 use Recranet\Api\Exceptions\ApiException;
@@ -18,8 +19,9 @@ $dotenv->load();
 
 // Get accommodations
 $app
-    ->command('accommodations [--modifiedDateFrom]', function (OutputInterface $output, $modifiedDateFrom = null) {
-        $client = new RecranetApiClient();
+    ->command('accommodations [--modifiedDateFrom=]', function (OutputInterface $output, $modifiedDateFrom = null) {
+        // Create client
+        $client = new RecranetApiClient(new ConsoleLogger($output));
 
         try {
             $result = $client->getAccommodations(compact('modifiedDateFrom'));
@@ -42,8 +44,9 @@ $app
 
 // Get accommodation price components
 $app
-    ->command('accommodation_price_components accommodation dateFrom dateTo [--modifiedDateFrom]', function (OutputInterface $output, $accommodation, $dateFrom, $dateTo, $modifiedDateFrom = null) {
-        $client = new RecranetApiClient();
+    ->command('accommodation_price_components accommodation dateFrom dateTo [--modifiedDateFrom=]', function (OutputInterface $output, $accommodation, $dateFrom, $dateTo, $modifiedDateFrom = null) {
+        // Create client
+        $client = new RecranetApiClient(new ConsoleLogger($output));
 
         try {
             $result = $client->getAccommodationPriceComponents(array(
@@ -74,8 +77,9 @@ $app
 
 // Get accommodations
 $app
-    ->command('age_group_specifications [--modifiedDateFrom]', function (OutputInterface $output, $modifiedDateFrom = null) {
-        $client = new RecranetApiClient();
+    ->command('age_group_specifications [--modifiedDateFrom=]', function (OutputInterface $output, $modifiedDateFrom = null) {
+        // Create client
+        $client = new RecranetApiClient(new ConsoleLogger($output));
 
         try {
             $result = $client->getAgeGroupSpecifications(compact('modifiedDateFrom'));
@@ -98,8 +102,9 @@ $app
 
 // Get discount specifications
 $app
-    ->command('discount_specifications [--modifiedDateFrom]', function (OutputInterface $output, $modifiedDateFrom = null) {
-        $client = new RecranetApiClient();
+    ->command('discount_specifications [--modifiedDateFrom=]', function (OutputInterface $output, $modifiedDateFrom = null) {
+        // Create client
+        $client = new RecranetApiClient(new ConsoleLogger($output));
 
         try {
             $result = $client->getDiscountSpecifications(compact('modifiedDateFrom'));
@@ -122,8 +127,9 @@ $app
 
 // Get reservations
 $app
-    ->command('guests [offset] [limit] [--modifiedDateFrom]', function (OutputInterface $output, $offset = null, $limit = null, $modifiedDateFrom = null) {
-        $client = new RecranetApiClient();
+    ->command('guests [offset] [limit] [--modifiedDateFrom=]', function (OutputInterface $output, $offset = null, $limit = null, $modifiedDateFrom = null) {
+        // Create client
+        $client = new RecranetApiClient(new ConsoleLogger($output));
 
         try {
             $result = $client->getGuests(array(
@@ -152,8 +158,9 @@ $app
 
 // Get package specifications
 $app
-    ->command('package_specifications [--modifiedDateFrom]', function (OutputInterface $output, $modifiedDateFrom = null) {
-        $client = new RecranetApiClient();
+    ->command('package_specifications [--modifiedDateFrom=]', function (OutputInterface $output, $modifiedDateFrom = null) {
+        // Create client
+        $client = new RecranetApiClient(new ConsoleLogger($output));
 
         try {
             $result = $client->getPackageSpecifications(compact('modifiedDateFrom'));
@@ -176,8 +183,9 @@ $app
 
 // Get reservations
 $app
-    ->command('reservations dateFrom dateTo [offset] [limit] [--modifiedDateFrom]', function (OutputInterface $output, $dateFrom, $dateTo, $offset = null, $limit = null, $modifiedDateFrom = null) {
-        $client = new RecranetApiClient();
+    ->command('reservations dateFrom dateTo [offset] [limit] [--modifiedDateFrom=]', function (OutputInterface $output, $dateFrom, $dateTo, $offset = null, $limit = null, $modifiedDateFrom = null) {
+        // Create client
+        $client = new RecranetApiClient(new ConsoleLogger($output));
 
         try {
             $result = $client->getReservations(array(
@@ -210,8 +218,9 @@ $app
 
 // Get supplements
 $app
-    ->command('supplements [--modifiedDateFrom]', function (OutputInterface $output, $modifiedDateFrom = null) {
-        $client = new RecranetApiClient();
+    ->command('supplements [--modifiedDateFrom=]', function (OutputInterface $output, $modifiedDateFrom = null) {
+        // Create client
+        $client = new RecranetApiClient(new ConsoleLogger($output));
 
         try {
             $result = $client->getSupplements(compact('modifiedDateFrom'));
@@ -265,7 +274,7 @@ $app
         }
 
         // Create client
-        $client = new RecranetApiClient();
+        $client = new RecranetApiClient(new ConsoleLogger($output));
 
         try {
             $result = $client->createReservation(json_encode($data));
@@ -286,7 +295,7 @@ $app
 $app
     ->command('reservation-update id token accommodation', function(InputInterface $input, OutputInterface $output, $id, $token, $accommodation) {
         // Create client
-        $client = new RecranetApiClient();
+        $client = new RecranetApiClient(new ConsoleLogger($output));
 
         // Set reservation request data
         $data = array(
@@ -361,7 +370,7 @@ $app
             'source' => $source
         );
 
-        $client = new RecranetApiClient();
+        $client = new RecranetApiClient(new ConsoleLogger($output));
 
         try {
             $result = $client->placeReservation($id, $token, json_encode($data));
