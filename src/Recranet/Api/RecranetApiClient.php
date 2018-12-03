@@ -82,6 +82,18 @@ class RecranetApiClient
     }
 
     /**
+     * Get guests
+     *
+     * @param array $params
+     *
+     * @return array\null
+     */
+    public function getGuests($params)
+    {
+        return $this->performHttpRequest('guests', $params);
+    }
+
+    /**
      * Get package specifications
      *
      * @param array $params

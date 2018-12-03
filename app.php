@@ -93,6 +93,29 @@ $app->command('discount_specifications [modifiedDateFrom]', function (OutputInte
     }
 });
 
+// Get reservations
+$app->command('guests [offset] [limit] [modifiedDateFrom]', function (OutputInterface $output, $offset = null, $limit = null, $modifiedDateFrom = null) {
+    $client = new RecranetApiClient();
+
+    try {
+        $result = $client->getGuests(array(
+            'offset' => $offset,
+            'limit' => $limit,
+            'modifiedDateFrom' => $modifiedDateFrom,
+        ));
+    } catch (ApiException $e) {
+        return $output->writeln(sprintf('ApiException: %s', $e->getMessage()));
+    }
+
+    // Output result count
+    $output->writeln(sprintf('%d guests found (max. 100 results)', count($result)));
+
+    // Output result items
+    foreach ($result as $item) {
+        $output->writeln(sprintf('%d - %s (modified: %s)', $item->id, $item->surname, $item->modified));
+    }
+});
+
 // Get package specifications
 $app->command('package_specifications [modifiedDateFrom]', function (OutputInterface $output, $modifiedDateFrom = null) {
     $client = new RecranetApiClient();
