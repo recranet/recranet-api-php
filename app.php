@@ -2,7 +2,11 @@
 
 require 'vendor/autoload.php';
 
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Dotenv\Dotenv;
 use Recranet\Api\RecranetApiClient;
 use Recranet\Api\Exceptions\ApiException;
@@ -177,6 +181,67 @@ $app->command('supplements [modifiedDateFrom]', function (OutputInterface $outpu
     foreach ($result as $item) {
         $output->writeln(sprintf('%d - %s (modified: %s)', $item->id, $item->description, $item->modified));
     }
+});
+
+// Create reservation
+$app->command('reservation-create accommodation dateFrom dateTo', function(InputInterface $input, OutputInterface $output, $accommodation, $dateFrom, $dateTo) {
+    // Set reservation request data
+    $data = array(
+        'accommodation' => array('id' => $accommodation),
+        'dateFrom' => $dateFrom,
+        'dateTo' => $dateTo,
+        'guest' => array()
+    );
+
+    // Guest attributes
+    $attributes = array(
+        'firstName',
+        'surname',
+        'email',
+        'phoneNumber',
+        'address',
+        'addressNo',
+        'postalCode',
+        'locality',
+        'country',
+        'locale'
+    );
+
+    $helper = new QuestionHelper();
+
+    foreach ($attributes as $attribute) {
+        $question = new Question('Reservation ' . $attribute . ': ', '');
+        $data['guest'][$attribute] = $helper->ask($input, $output, $question);
+    }
+
+    // Create client
+    $client = new RecranetApiClient();
+
+    try {
+        $result = $client->createReservation(json_encode($data));
+    } catch (ApiException $e) {
+        return $output->writeln(sprintf('ApiException: %s', $e->getMessage()));
+    }
+
+    $output->writeln(sprintf('Reservation created with id %d and token %s', $result->id, $result->token));
+});
+
+// Place reservation
+$app->command('reservation-place id token [source]', function(InputInterface $input, OutputInterface $output, $id, $token, $source = null) {
+    // Set reservation request data
+    $data = array(
+        'source' => $source
+    );
+
+    $client = new RecranetApiClient();
+
+    try {
+        $result = $client->placeReservation($id, $token, json_encode($data));
+    } catch (ApiException $e) {
+        return $output->writeln(sprintf('ApiException: %s', $e->getMessage()));
+    }
+
+    $output->writeln('Reservation placed');
 });
 
 $app->run();

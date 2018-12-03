@@ -42,7 +42,7 @@ class RecranetApiClient
      */
     public function getAccommodations($params)
     {
-        return $this->performHttpRequest('accommodations', $params);
+        return $this->performHttpRequest('/accommodations/', $params);
     }
 
     /**
@@ -54,7 +54,7 @@ class RecranetApiClient
      */
     public function getAccommodationPriceComponents($params)
     {
-        return $this->performHttpRequest('accommodation_price_components', $params);
+        return $this->performHttpRequest('/accommodation_price_components/', $params);
     }
 
     /**
@@ -66,7 +66,7 @@ class RecranetApiClient
      */
     public function getAgeGroupSpecifications($params)
     {
-        return $this->performHttpRequest('age_group_specifications', $params);
+        return $this->performHttpRequest('/age_group_specifications/', $params);
     }
 
     /**
@@ -78,7 +78,7 @@ class RecranetApiClient
      */
     public function getDiscountSpecifications($params)
     {
-        return $this->performHttpRequest('discount_specifications', $params);
+        return $this->performHttpRequest('/discount_specifications/', $params);
     }
 
     /**
@@ -90,7 +90,7 @@ class RecranetApiClient
      */
     public function getGuests($params)
     {
-        return $this->performHttpRequest('guests', $params);
+        return $this->performHttpRequest('/guests/', $params);
     }
 
     /**
@@ -102,7 +102,7 @@ class RecranetApiClient
      */
     public function getPackageSpecifications($params)
     {
-        return $this->performHttpRequest('package_specifications', $params);
+        return $this->performHttpRequest('/package_specifications/', $params);
     }
 
     /**
@@ -114,7 +114,7 @@ class RecranetApiClient
      */
     public function getReservations($params)
     {
-        return $this->performHttpRequest('reservations', $params);
+        return $this->performHttpRequest('/reservations/', $params);
     }
 
     /**
@@ -126,20 +126,82 @@ class RecranetApiClient
      */
     public function getSupplements($params)
     {
-        return $this->performHttpRequest('supplements', $params);
+        return $this->performHttpRequest('/supplements/', $params);
     }
 
     /**
-     * Perform http request
+     * Create reservation
+     *
+     * @param array $data
+     *
+     * @return array\null
+     */
+    public function createReservation($data)
+    {
+        return $this->performHttpPostRequest('/reservations/', $data);
+    }
+
+    /**
+     * Place reservation
+     *
+     * @param int $id
+     * @param string $token
+     * @param array $data
+     *
+     * @return array\null
+     */
+    public function placeReservation($id, $token, $data)
+    {
+        return $this->performHttpPutRequest(sprintf('/reservations/%s/place?token=%s', $id, $token), $data);
+    }
+
+    /**
+     * Perform HTTP GET request
      *
      * @param array $params
      *
      * @return array\null
      */
-    public function performHttpRequest($method, $params)
+    public function performHttpRequest($url, $params)
     {
         $params = array_merge($params, array('organization' => getenv('API_ORGANIZATION')));
-        $this->client->get(sprintf('%s/%s/', self::API_ENDPOINT, $method), $params);
+        $this->client->get(sprintf('%s%s', self::API_ENDPOINT, $url), $params);
+
+        if ($this->client->error) {
+            throw new ApiException($this->client->errorMessage, $this->client->errorCode);
+        }
+
+        return $this->client->getResponse();
+    }
+
+    /**
+     * Perform HTTP POST request
+     *
+     * @param array $data
+     *
+     * @return array\null
+     */
+    public function performHttpPostRequest($url, $data)
+    {
+        $this->client->post(sprintf('%s%s?organization=%s', self::API_ENDPOINT, $url, getenv('API_ORGANIZATION')), $data);
+
+        if ($this->client->error) {
+            throw new ApiException($this->client->errorMessage, $this->client->errorCode);
+        }
+
+        return $this->client->getResponse();
+    }
+
+    /**
+     * Perform HTTP PUT request
+     *
+     * @param array $data
+     *
+     * @return array\null
+     */
+    public function performHttpPutRequest($url, $data)
+    {
+        $this->client->put(sprintf('%s%s', self::API_ENDPOINT, $url), $data);
 
         if ($this->client->error) {
             throw new ApiException($this->client->errorMessage, $this->client->errorCode);
