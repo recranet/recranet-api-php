@@ -58,6 +58,18 @@ class RecranetApiClient
     }
 
     /**
+     * Get age group specifications
+     *
+     * @param array $params
+     *
+     * @return array\null
+     */
+    public function getAgeGroupSpecifications($params)
+    {
+        return $this->performHttpRequest('age_group_specifications', $params);
+    }
+
+    /**
      * Get discount specifications
      *
      * @param array $params
@@ -79,6 +91,18 @@ class RecranetApiClient
     public function getPackageSpecifications($params)
     {
         return $this->performHttpRequest('package_specifications', $params);
+    }
+
+    /**
+     * Get reservations
+     *
+     * @param array $params
+     *
+     * @return array\null
+     */
+    public function getReservations($params)
+    {
+        return $this->performHttpRequest('reservations', $params);
     }
 
     /**
