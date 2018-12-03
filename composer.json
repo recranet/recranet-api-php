@@ -1,6 +1,12 @@
 {
     "require": {
         "php-curl-class/php-curl-class": "^8.3",
-        "mnapoli/silly": "^1.7"
+        "mnapoli/silly": "^1.7",
+        "vlucas/phpdotenv": "^2.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Recranet\\Api\\": "src/"
+        }
     }
 }
