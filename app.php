@@ -226,6 +226,70 @@ $app->command('reservation-create accommodation dateFrom dateTo', function(Input
     $output->writeln(sprintf('Reservation created with id %d and token %s', $result->id, $result->token));
 });
 
+// Update reservation
+$app->command('reservation-update id token accommodation', function(InputInterface $input, OutputInterface $output, $id, $token, $accommodation) {
+    // Create client
+    $client = new RecranetApiClient();
+
+    // Set reservation request data
+    $data = array(
+        'ageGroupLines' => array(),
+        'supplementOrderLines' => array()
+    );
+
+    $helper = new QuestionHelper();
+
+    // Get age group specifications
+    try {
+        $ageGroupSpecifications = $client->getAgeGroupSpecifications(array('accommodation' => $accommodation));
+    } catch (ApiException $e) {
+        return $output->writeln(sprintf('ApiException: %s', $e->getMessage()));
+    }
+
+    foreach ($ageGroupSpecifications as $ageGroupSpecification) {
+        $question = new Question('Quantity for ' . $ageGroupSpecification->description . ': ', '');
+        $quantity = $helper->ask($input, $output, $question);
+
+        if ($quantity > 0) {
+            $data['ageGroupLines'][] = array(
+                'quantity' => $quantity,
+                'ageGroupSpecification' => array('id' => $ageGroupSpecification->id)
+            );
+        }
+    }
+
+    // Get supplements
+    try {
+        $supplements = $client->getSupplements(array(
+            'accommodation' => $accommodation,
+            'required' => 'false',
+            'normal' => 'true'
+        ));
+    } catch (ApiException $e) {
+        return $output->writeln(sprintf('ApiException: %s', $e->getMessage()));
+    }
+
+    foreach ($supplements as $supplement) {
+        $question = new Question('Quantity for ' . $supplement->description . ': ', '');
+        $quantity = $helper->ask($input, $output, $question);
+
+        if ($quantity > 0) {
+            $data['supplementOrderLines'][] = array(
+                'quantity' => $quantity,
+                'supplement' => array('id' => $supplement->id)
+            );
+        }
+    }
+
+    try {
+        $result = $client->updateReservation($id, $token, json_encode($data));
+    } catch (ApiException $e) {
+        return $output->writeln(sprintf('ApiException: %s', $e->getMessage()));
+    }
+
+    $output->writeln(sprintf('Reservation updated with id %d and token %s', $result->id, $result->token));
+});
+
 // Place reservation
 $app->command('reservation-place id token [source]', function(InputInterface $input, OutputInterface $output, $id, $token, $source = null) {
     // Set reservation request data

@@ -142,6 +142,20 @@ class RecranetApiClient
     }
 
     /**
+     * Update reservation
+     *
+     * @param int $id
+     * @param string $token
+     * @param array $data
+     *
+     * @return array\null
+     */
+    public function updateReservation($id, $token, $data)
+    {
+        return $this->performHttpPutRequest(sprintf('/reservations/%s?token=%s', $id, $token), $data);
+    }
+
+    /**
      * Place reservation
      *
      * @param int $id
