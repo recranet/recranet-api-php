@@ -28,7 +28,7 @@ class RecranetApiClient
     public function __construct()
     {
         $this->client = new Curl();
-        $this->client->setBasicAuthentication(getenv('API_USERNAME'), getenv('API_PASSWORD'));
+        $this->client->setBasicAuthentication(getenv('RECRANET_API_USERNAME'), getenv('RECRANET_API_PASSWORD'));
         $this->client->setDefaultDecoder('json');
         $this->client->setUserAgent('recranet-api-php/' . self::CLIENT_VERSION . ';PHP/' . phpversion());
     }
@@ -178,7 +178,7 @@ class RecranetApiClient
      */
     public function performHttpRequest($url, $params)
     {
-        $params = array_merge($params, array('organization' => getenv('API_ORGANIZATION')));
+        $params = array_merge($params, array('organization' => getenv('RECRANET_API_ORGANIZATION')));
         $this->client->get(sprintf('%s%s', self::API_ENDPOINT, $url), $params);
 
         if ($this->client->error) {
@@ -197,7 +197,7 @@ class RecranetApiClient
      */
     public function performHttpPostRequest($url, $data)
     {
-        $this->client->post(sprintf('%s%s?organization=%s', self::API_ENDPOINT, $url, getenv('API_ORGANIZATION')), $data);
+        $this->client->post(sprintf('%s%s?organization=%s', self::API_ENDPOINT, $url, getenv('RECRANET_API_ORGANIZATION')), $data);
 
         if ($this->client->error) {
             throw new ApiException($this->client->errorMessage, $this->client->errorCode);

@@ -12,7 +12,10 @@ composer install
 Add the configuration .env file in the root of this project.
 
 ```
-API_USERNAME=demo@recranet.com
-API_PASSWORD=
-API_ORGANIZATION=1000
+RECRANET_API_USERNAME=demo@recranet.com
+RECRANET_API_PASSWORD=
+RECRANET_API_ORGANIZATION=1000
 ```
+
+## Console Application
+We provide a console application with this SDK. Run `php app.php` to list available commands, use the help function to get the required parameters.
