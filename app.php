@@ -76,7 +76,7 @@ $app
     ))
 ;
 
-// Get accommodations
+// Get age group specifications
 $app
     ->command('age_group_specifications [--modifiedDateFrom=]', function (OutputInterface $output, $modifiedDateFrom = null) {
         // Create client
@@ -98,6 +98,36 @@ $app
     })
     ->descriptions('Get age group specifications', array(
         '--modifiedDateFrom' => 'Date modified in ISO8601 format 2019-01-01T00:00:00Z'
+    ))
+;
+
+// Get accommodation quotations
+$app
+    ->command('accommodation_quotations accommodation dateFrom dateTo', function (OutputInterface $output, $accommodation, $dateFrom, $dateTo) {
+        // Create client
+        $client = new RecranetApiClient(new ConsoleLogger($output));
+
+        try {
+            $result = $client->getAccommodationQuotations($accommodation, array(
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo
+            ));
+        } catch (ApiException $e) {
+            return $output->writeln(sprintf('ApiException: %s', $e->getMessage()));
+        }
+
+        // Output result count
+        $output->writeln(sprintf('%d quotations found', count($result)));
+
+        // Output result items
+        foreach ($result as $item) {
+            $output->writeln(sprintf('Period %s - %s (orderLinesTotal: %s)', $item->dateFrom, $item->dateTo, $item->orderLinesTotal));
+        }
+    })
+    ->descriptions('Get accommodation quotations', array(
+        'accommodation' => 'Accommodation id',
+        'dateFrom' => 'Date from in ISO8601 format 2019-01-01T00:00:00Z',
+        'dateTo' => 'Date to in ISO8601 format 2019-01-01T00:00:00Z',
     ))
 ;
 

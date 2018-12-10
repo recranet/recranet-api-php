@@ -78,6 +78,19 @@ class RecranetApiClient
     }
 
     /**
+     * Get accommodation quotations
+     *
+     * @param int $accommodation
+     * @param array $params
+     *
+     * @return array\null
+     */
+    public function getAccommodationQuotations($accommodation, $params)
+    {
+        return $this->performHttpRequest('/accommodations/' . $accommodation . '/quotations/', $params);
+    }
+
+    /**
      * Get discount specifications
      *
      * @param array $params
