@@ -11,7 +11,7 @@ class RecranetApiClient
     /**
      * Version of our client.
      */
-    const CLIENT_VERSION = '1.0.1';
+    const CLIENT_VERSION = '1.1.0';
 
     /**
      * Endpoint of the remote API.
