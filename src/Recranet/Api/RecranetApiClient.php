@@ -135,7 +135,7 @@ class RecranetApiClient
      */
     public function getReservations($params)
     {
-        return $this->performHttpRequest('/reservations/', $params);
+        return $this->performHttpRequest('/reservations/summaries', $params);
     }
 
     /**
